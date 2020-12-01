@@ -1,0 +1,17 @@
+scalar Date
+
+type User {
+    id: ID!
+    username: String!
+    habits: [Habit]
+}
+
+type Habit {
+    id: ID!
+    name: String!
+    days: [Date]
+}
+
+type Query {
+    q: String
+}
