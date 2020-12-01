@@ -2,9 +2,11 @@ const { ApolloServer } = require('apollo-server');
 const { importSchema } = require('graphql-import')
 const typeDefs = importSchema('./src/schema.graphql')
 const Date = require('./resolvers/Date')
+const Query = require('./resolvers/Query')
 
 const resolvers = {
-  Date
+  Date,
+  Query
 };
 
 const server = new ApolloServer({ 
