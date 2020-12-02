@@ -1,5 +1,3 @@
-scalar Date
-
 type User {
     id: ID!
     username: String!
@@ -10,8 +8,21 @@ type Habit {
     id: ID!
     name: String!
     days: [Date]
+    user: User
+}
+
+type Date {
+    id: ID!
+    epoch: Int!
+    habit: Habit!
 }
 
 type Query {
-    habits: [Habit]!
+    users: [User]
+    habits(username: String!): [Habit]
+}
+
+type Mutation {
+    createUser(username: String!): User!
+    createHabit(username: String!, name: String!): Habit!
 }

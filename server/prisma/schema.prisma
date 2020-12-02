@@ -1,0 +1,30 @@
+datasource db {
+  provider = "sqlite" 
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  username    String   @unique
+  habits      Habit[]
+}
+
+model Habit {
+    id          Int      @id @default(autoincrement())
+    name        String
+    days        Date[]
+    userId      Int 
+    user        User @relation(fields: [userId], references: [id])
+}
+
+model Date {
+    id          Int      @id @default(autoincrement())
+    epoch       Int
+    habitId     Int 
+    habit       Habit @relation(fields: [habitId], references: [id])
+}
+
