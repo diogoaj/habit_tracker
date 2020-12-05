@@ -4,9 +4,7 @@ class User extends Component {
   render() {
     return (
       <div>
-        <div>
-          {this.props.user.username}
-        </div>
+        {this.props.user.username}
       </div>
     )
   }
