@@ -3,9 +3,11 @@ import React, { Component } from 'react'
 class User extends Component {
   render() {
     return (
-      <div>
-        {this.props.user.username}
-      </div>
+      <button className="outline pa3 mv1 f4">
+        <div className="fl">
+          {this.props.user.username}
+        </div>
+      </button>
     )
   }
 }

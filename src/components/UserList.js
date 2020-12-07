@@ -19,7 +19,7 @@ const UserList = () => {
   const { data } = useQuery(USER_QUERY);
 
   return (
-    <div className="dib">
+    <div className="flex flex-column mw5 mw8-ns center bg-light-gray pa3 mv3 ph5-ns">
       {data && (
         <>
           {data.users.map((user) => (
