@@ -10,7 +10,8 @@ const App = () => {
         <Header/>
         <Switch>
           <Route exact path="/"/>
-          <Route exact path="/users" component={Calendar} />
+          <Route exact path="/users" component={UserList} />
+          <Route exact path="/calendar" component={Calendar} />
         </Switch>
     </div>
   )

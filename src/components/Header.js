@@ -11,6 +11,7 @@ const Header = () => {
         </nav>
         <nav className="f6 fw6 ttu tracked w-80">
             <Link to="/users" className="link dim white dib mr3 fr">Users</Link>
+            <Link to="/calendar" className="link dim white dib mr3 fr">Calendar</Link>
         </nav>
     </header>
   );
