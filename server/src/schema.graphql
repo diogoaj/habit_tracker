@@ -20,9 +20,11 @@ type Date {
 type Query {
     users: [User]
     habits(username: String!): [Habit]
+    checkedDays(username: String!, habit_name: String!): [Date]
 }
 
 type Mutation {
     createUser(username: String!): User!
     createHabit(username: String!, name: String!): Habit!
+    checkDay(username: String!, habit_name: String!, day: Int!): Date!
 }

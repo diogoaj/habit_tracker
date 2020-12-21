@@ -14,8 +14,11 @@ const HABITS_QUERY = gql`
 `
 
 const HabitCalendar = () => {
+  const { data } = useQuery(HABITS_QUERY);
+
   const [month_d, setMonthnum] = useState(getMonth());
   const [month, setMonth] = useState(integerToMonth(getMonth()));
+  const [days_checked, setDaysChecked] = useState([]);
 
   function prevMonth() {
     setMonthnum(mod(month_d - 1, 12));
@@ -27,7 +30,6 @@ const HabitCalendar = () => {
     setMonth(integerToMonth(mod(month_d + 1, 12)));
   }
 
-  const { data } = useQuery(HABITS_QUERY);
   return (
     <div className="mv4">
      
@@ -48,7 +50,7 @@ const HabitCalendar = () => {
         {data && (
           <>
             {data.habits.map((habit) => (
-              <HabitRow month={month_d} key={habit.id} name={habit.name} />
+              <HabitRow clicked={days_checked} month={month_d} key={habit.id} name={habit.name} />
             ))}
           </>
         )} 
@@ -58,13 +60,6 @@ const HabitCalendar = () => {
   );
 };
 
-class Day extends Component {
-  render() {
-      return (
-          <th className="f5 w2 outline" key={this.props.day}>{this.props.day}</th>
-      )
-    }
-}
 
 class DaysOfMonth extends Component {
   render() {
@@ -72,7 +67,7 @@ class DaysOfMonth extends Component {
     return (
       <>
         {days.map((day) => (
-          <Day key={day} day={day} />
+          <th className="f5 w2 outline" key={day}>{day}</th>
         ))}
       </>
     );
@@ -98,14 +93,30 @@ class ClickableDays extends Component {
     return (
       <>
         {days.map((day) => (
-          <th key={day} className="outline">
-            <div className="inline w2 h2">
-            </div>
-          </th>
+          <ClickCell key={day}/>
         ))}
       </>
     );
   }
+}
+
+class ClickCell extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      active: false
+    }
+  }
+
+  clickMe = () => {
+    //this.setState({active: !this.state.active})
+  }
+
+  render() {
+      return (
+        <th onClick={this.clickMe} className="w2 outline" key={this.props.day}></th>
+      )
+    }
 }
   
 
