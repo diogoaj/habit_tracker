@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react'
 import {daysInMonth, getMonth, integerToMonth, getYear} from '../utils/date'
-import { useQuery } from 'react-apollo'
+import { useQuery, useLazyQuery } from 'react-apollo'
 import gql from 'graphql-tag'
 import {mod} from '../utils/math'
 
@@ -9,6 +9,11 @@ const HABITS_QUERY = gql`
     habits(username:"diogoaj") {
         id
         name
+        days {
+          day 
+          month
+          year
+        }
     }
   }
 `
@@ -18,7 +23,6 @@ const HabitCalendar = () => {
 
   const [month_d, setMonthnum] = useState(getMonth());
   const [month, setMonth] = useState(integerToMonth(getMonth()));
-  const [days_checked, setDaysChecked] = useState([]);
 
   function prevMonth() {
     setMonthnum(mod(month_d - 1, 12));
@@ -50,7 +54,7 @@ const HabitCalendar = () => {
         {data && (
           <>
             {data.habits.map((habit) => (
-              <HabitRow clicked={days_checked} month={month_d} key={habit.id} name={habit.name} />
+              <HabitRow month={month_d} days={habit.days} key={habit.id} name={habit.name} />
             ))}
           </>
         )} 
@@ -80,7 +84,7 @@ class HabitRow extends Component {
       return (
         <tr>
           <th className="f5 w2 outline">{this.props.name}</th>
-          <ClickableDays month={this.props.month}/> 
+          <ClickableDays days={this.props.days} month={this.props.month}/> 
         </tr>
       )
     }
@@ -93,7 +97,7 @@ class ClickableDays extends Component {
     return (
       <>
         {days.map((day) => (
-          <ClickCell key={day}/>
+          <ClickCell days={this.props.days} day={day} key={day} month={this.props.month}/>
         ))}
       </>
     );
@@ -103,19 +107,34 @@ class ClickableDays extends Component {
 class ClickCell extends Component {
   constructor(props){
     super(props);
-    this.state = {
-      active: false
-    }
   }
-
+  
   clickMe = () => {
     //this.setState({active: !this.state.active})
   }
 
   render() {
-      return (
-        <th onClick={this.clickMe} className="w2 outline" key={this.props.day}></th>
-      )
+      const checked_days = this.props.days;
+      var active = false;
+
+      for(var i=0; i < checked_days.length; i++) {
+        if (this.props.day === checked_days[i].day && (this.props.month+1) === checked_days[i].month){
+          active = true
+          break;
+        } else {
+          active = false
+        }
+      }
+
+      if (active){
+        return (
+          <th onClick={this.clickMe} className="w2 outline bg-green" key={this.props.day}></th>
+        )
+      } else {
+        return (
+          <th onClick={this.clickMe} className="w2 outline" key={this.props.day}></th>
+        )
+      }
     }
 }
   
