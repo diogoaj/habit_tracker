@@ -30,34 +30,20 @@ async function createHabit(parent, args, context, info) {
 
 async function checkDay(parent, args, context, info) {
     const user = await context.prisma.user.findUnique({ where: { username: args.username } })
-    const habit = await context.prisma.habit.findFirst(
-        {
-          where: {
-            name: {
-              equals: args.habit_name,
-            },
-            userId: {
-              equals: user.id,
-            },
-          },
-        })
+    const habit = await context.prisma.habit.findFirst({
+      where: {
+          name: args.habit_name,
+          userId: user.id
+      }
+    })
 
-    const date = await context.prisma.date.findFirst(
-      {
+    const date = await context.prisma.date.findFirst({
         where: {
-          day: {
-            equals: args.day,
-          },
-          month: {
-            equals: args.month,
-          },
-          year: {
-            equals: args.year,
-          },
-          habitId: {
-            equals: args.id,
-          },
-        },
+          day: args.day,
+          month: args.month,
+          year: args.year,
+          habitId: habit.id
+        }
       })
 
     if (date !== null) {
@@ -75,14 +61,8 @@ async function checkDay(parent, args, context, info) {
     
     context.prisma.habit.update({
         where: {
-             where: {
-              name: {
-                equals: args.habit_name,
-              },
-              userId: {
-                equals: user.id,
-              },
-            },
+          name: args.habit_name,
+          userId: user.id,
           },
         data: newDate
     })
@@ -92,45 +72,29 @@ async function checkDay(parent, args, context, info) {
 
 async function uncheckDay(parent, args, context, info) {
   const user = await context.prisma.user.findUnique({ where: { username: args.username } })
-  const habit = await context.prisma.habit.findFirst(
-      {
+  const habit = await context.prisma.habit.findFirst({
         where: {
-          name: {
-            equals: args.habit_name,
-          },
-          userId: {
-            equals: user.id,
-          },
-        },
+          name: args.habit_name,
+          userId: user.id,
+        }
       })
 
-  const d = await context.prisma.date.findFirst(
-    {
+  const d = await context.prisma.date.findFirst({
       where: {
-        day: {
-          equals: args.day,
-        },
-        month: {
-          equals: args.month,
-        },
-        year: {
-          equals: args.year,
-        },
-        habitId: {
-          equals: habit.id,
-        },
-      },
-    })
+        day: args.day,
+        month: args.month,
+        year: args.year,
+        habitId: habit.id,
+        }
+      })
 
   if (d === null){
     return null
   }
 
-  await context.prisma.date.delete(
-    { 
+  await context.prisma.date.delete({ 
       where: { id: d.id } 
-    }
-  )
+  })
 
   return d
 }

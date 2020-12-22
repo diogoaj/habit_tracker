@@ -8,9 +8,6 @@ const USER_QUERY = gql`
     users {
         id
         username
-        habits {
-            name
-        }
     }
   }
 `

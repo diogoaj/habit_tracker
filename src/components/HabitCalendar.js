@@ -5,21 +5,27 @@ import gql from 'graphql-tag'
 import {mod} from '../utils/math'
 
 const HABITS_QUERY = gql`
-  {
-    habits(username:"diogoaj") {
+  query getHabits($username: String!) {
+    habits(username: $username) {
         id
         name
-        days {
-          day 
-          month
-          year
-        }
+    }
+  }
+`
+
+const DAYS_QUERY = gql`
+  query getDays($username: String!, $name: String!, $month: Int, $year: Int) {
+    habitDays(username: $username, name: $name, month: $month, year: $year) {
+        id
+        day
+        month
+        year
     }
   }
 `
 
 const HabitCalendar = () => {
-  const { data } = useQuery(HABITS_QUERY);
+  const { data } = useQuery(HABITS_QUERY, {variables: {username: "diogoaj"}});
 
   const [month_d, setMonthnum] = useState(getMonth());
   const [month, setMonth] = useState(integerToMonth(getMonth()));
@@ -78,25 +84,26 @@ class DaysOfMonth extends Component {
   }
 }
 
-
-class HabitRow extends Component {
-  render() {
-      return (
-        <tr>
-          <th className="f5 w2 outline">{this.props.name}</th>
-          <ClickableDays days={this.props.days} month={this.props.month}/> 
-        </tr>
-      )
-    }
+const HabitRow = (e) => {
+  const { data } = useQuery(DAYS_QUERY, 
+    {variables: {
+      username: "diogoaj", name: e.name}});
+  
+  return (
+    <tr>
+      <th className="f5 w2 outline">{e.name}</th>
+      {data && <ClickableDays days={data} month={e.month}/> }
+    </tr>
+  )
 }
 
 class ClickableDays extends Component {
   render() {
-    let days = createDaysArray(this.props.month);
+    let days_array = createDaysArray(this.props.month);
 
     return (
       <>
-        {days.map((day) => (
+        {days_array.map((day) => (
           <ClickCell days={this.props.days} day={day} key={day} month={this.props.month}/>
         ))}
       </>
@@ -114,7 +121,7 @@ class ClickCell extends Component {
   }
 
   render() {
-      const checked_days = this.props.days;
+      const checked_days = this.props.days.habitDays;
       var active = false;
 
       for(var i=0; i < checked_days.length; i++) {
