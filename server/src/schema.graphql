@@ -13,7 +13,9 @@ type Habit {
 
 type Date {
     id: ID!
-    epoch: Int!
+    day: Int!
+    month: Int!
+    year: Int!
     habit: Habit!
 }
 
@@ -26,5 +28,6 @@ type Query {
 type Mutation {
     createUser(username: String!): User!
     createHabit(username: String!, name: String!): Habit!
-    checkDay(username: String!, habit_name: String!, day: Int!): Date!
+    checkDay(username: String!, habit_name: String!, day: Int!, month: Int!, year: Int!): Date
+    uncheckDay(username: String!, habit_name: String!, day: Int!, month: Int!, year: Int!): Date
 }

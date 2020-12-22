@@ -16,6 +16,11 @@ async function habits(parent, args, context, info) {
 
 async function checkedDays(parent, args, context, info) {
   const user = await context.prisma.user.findUnique({where: {username: args.username}})
+
+  if (user === null ) {
+    return []
+  }
+
   const habit = await context.prisma.habit.findFirst(
     {
       where: {
@@ -28,7 +33,8 @@ async function checkedDays(parent, args, context, info) {
       },
     })
 
-  if (habit === null) {
+
+  if (habit === null ) {
     return []
   }
 
