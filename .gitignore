@@ -3,7 +3,8 @@
 # dependencies
 /node_modules
 /server/node_modules
-/server/migrations
+/server/migration
+/server/prisma/dev.db
 /.pnp
 .pnp.js
 

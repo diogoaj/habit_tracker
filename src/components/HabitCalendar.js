@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react'
 import {daysInMonth, getMonth, integerToMonth, getYear} from '../utils/date'
-import { useQuery, useLazyQuery } from 'react-apollo'
+import { useQuery, useLazyQuery, useMutation} from 'react-apollo'
 import gql from 'graphql-tag'
 import {mod} from '../utils/math'
 
@@ -24,18 +24,55 @@ const DAYS_QUERY = gql`
   }
 `
 
+const CHECK_DAY_MUTATION = gql`
+  mutation checkDayMutation(
+    $username: String!
+    $habit_name: String!,
+    $day: Int!,
+    $month: Int!,
+    $year: Int!
+  ) {
+    checkDay(username: $username, habit_name: $habit_name, day: $day, month: $month, year: $year) {
+      id
+    }
+  }
+`;
+
+const UNCHECK_DAY_MUTATION = gql`
+  mutation uncheckDayMutation(
+    $username: String!
+    $habit_name: String!,
+    $day: Int!,
+    $month: Int!,
+    $year: Int!
+  ) {
+    uncheckDay(username: $username, habit_name: $habit_name, day: $day, month: $month, year: $year) {
+      id
+    }
+  }
+`;
+
 const HabitCalendar = () => {
   const { data } = useQuery(HABITS_QUERY, {variables: {username: "diogoaj"}});
 
   const [month_d, setMonthnum] = useState(getMonth());
   const [month, setMonth] = useState(integerToMonth(getMonth()));
+  const [year, setYear] = useState(2020);
 
   function prevMonth() {
+    var n = month_d - 1
+    if (n === -1) {
+      setYear(year - 1)
+    }
     setMonthnum(mod(month_d - 1, 12));
     setMonth(integerToMonth(mod(month_d - 1, 12)));
   }
 
   function nextMonth() {
+    var n = month_d + 1
+    if (n === 12) {
+      setYear(year + 1)
+    }
     setMonthnum(mod(month_d + 1, 12));
     setMonth(integerToMonth(mod(month_d + 1, 12)));
   }
@@ -45,7 +82,7 @@ const HabitCalendar = () => {
      
       <div className="center w-80 tc">
         <button onClick={prevMonth}>&laquo;</button>
-        <span className="f3 ma3">{month}</span>
+        <span className="f3 ma3">{month} {year}</span>
         <button onClick={nextMonth}>&raquo;</button>
       </div>
       
@@ -60,7 +97,7 @@ const HabitCalendar = () => {
         {data && (
           <>
             {data.habits.map((habit) => (
-              <HabitRow month={month_d} days={habit.days} key={habit.id} name={habit.name} />
+              <HabitRow year={year} month={month_d} days={habit.days} key={habit.id} name={habit.name} />
             ))}
           </>
         )} 
@@ -92,57 +129,78 @@ const HabitRow = (e) => {
   return (
     <tr>
       <th className="f5 w2 outline">{e.name}</th>
-      {data && <ClickableDays days={data} month={e.month}/> }
+      {data && <ClickableDays days={data} month={e.month} year={e.year} habit={e.name}/> }
     </tr>
   )
 }
 
 class ClickableDays extends Component {
   render() {
+    var map = {}
     let days_array = createDaysArray(this.props.month);
+
+    for(var i=0; i < days_array.length; i++) {
+      map[i+1] = false;
+    }
+
+    const checked_days = this.props.days.habitDays;
+ 
+    for(var i=0; i < checked_days.length; i++) {
+      if ((this.props.month+1) === checked_days[i].month &&
+         this.props.year === checked_days[i].year){
+        map[checked_days[i].day] = true;
+      } 
+    }
 
     return (
       <>
         {days_array.map((day) => (
-          <ClickCell days={this.props.days} day={day} key={day} month={this.props.month}/>
+          <ClickCell days={map} day={day} key={day} month={this.props.month} year={this.props.year} habit={this.props.habit}/>
         ))}
       </>
     );
   }
 }
 
-class ClickCell extends Component {
-  constructor(props){
-    super(props);
-  }
-  
-  clickMe = () => {
-    //this.setState({active: !this.state.active})
-  }
+const ClickCell = (e) => {
+  const [checkDay] = useMutation(CHECK_DAY_MUTATION, {
+    variables: {
+      username: "diogoaj",
+      habit_name: e.habit,
+      day: e.day,
+      month: e.month+1,
+      year: e.year
+    }, refetchQueries: [{ query: DAYS_QUERY, variables: {username: "diogoaj", name: e.habit}}]
+  });
 
-  render() {
-      const checked_days = this.props.days.habitDays;
-      var active = false;
+  const [uncheckDay] = useMutation(UNCHECK_DAY_MUTATION, {
+    variables: {
+      username: "diogoaj",
+      habit_name: e.habit,
+      day: e.day,
+      month: e.month+1,
+      year: e.year
+    }, refetchQueries: [{ query: DAYS_QUERY, variables: {username: "diogoaj", name: e.habit}}]
+    });
 
-      for(var i=0; i < checked_days.length; i++) {
-        if (this.props.day === checked_days[i].day && (this.props.month+1) === checked_days[i].month){
-          active = true
-          break;
-        } else {
-          active = false
-        }
-      }
-
-      if (active){
-        return (
-          <th onClick={this.clickMe} className="w2 outline bg-green" key={this.props.day}></th>
-        )
-      } else {
-        return (
-          <th onClick={this.clickMe} className="w2 outline" key={this.props.day}></th>
-        )
-      }
+  function clickMe() {
+    if (e.days[e.day]){
+      uncheckDay();
+    } else {
+      checkDay();
     }
+  }
+
+  if (e.days[e.day]){
+    return (
+      <th onClick={clickMe} className="w2 outline bg-green" key={e.day}></th>
+    )
+  } else {
+    return (
+      <th onClick={clickMe} className="w2 outline" key={e.day}></th>
+    )
+  }
+    
 }
   
 
