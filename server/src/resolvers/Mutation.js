@@ -1,4 +1,4 @@
-async function createUser(parent, args, context, info) {
+async function registerUser(parent, args, context, info) {
     const newUser = context.prisma.user.create({
         data: {
             username: args.username,
@@ -102,7 +102,7 @@ async function uncheckDay(parent, args, context, info) {
 
 
 module.exports = {
-    createUser,
+    registerUser,
     createHabit,
     checkDay,
     uncheckDay,

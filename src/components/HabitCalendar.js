@@ -7,7 +7,6 @@ import {mod} from '../utils/math'
 const HABITS_QUERY = gql`
   query getHabits($username: String!) {
     habits(username: $username) {
-        id
         name
     }
   }
@@ -16,7 +15,6 @@ const HABITS_QUERY = gql`
 const DAYS_QUERY = gql`
   query getDays($username: String!, $name: String!, $month: Int, $year: Int) {
     habitDays(username: $username, name: $name, month: $month, year: $year) {
-        id
         day
         month
         year
@@ -59,6 +57,8 @@ const HabitCalendar = () => {
   const [month, setMonth] = useState(integerToMonth(getMonth()));
   const [year, setYear] = useState(2020);
 
+  let days = createDaysArray(month_d);
+
   function prevMonth() {
     var n = month_d - 1
     if (n === -1) {
@@ -90,14 +90,14 @@ const HabitCalendar = () => {
             <thead>
               <tr>
                 <th className="f5 w2 outline">Habit</th>
-                <DaysOfMonth month={month_d}/>
+                <DaysOfMonth days_to_print={days}/>
               </tr>
             </thead>
         <tbody>
         {data && (
           <>
             {data.habits.map((habit) => (
-              <HabitRow year={year} month={month_d} days={habit.days} key={habit.id} name={habit.name} />
+              <HabitRow days_to_print={days} year={year} month={month_d} key={habit.id} name={habit.name} />
             ))}
           </>
         )} 
@@ -110,10 +110,9 @@ const HabitCalendar = () => {
 
 class DaysOfMonth extends Component {
   render() {
-    let days = createDaysArray(this.props.month);
     return (
       <>
-        {days.map((day) => (
+        {this.props.days_to_print.map((day) => (
           <th className="f5 w2 outline" key={day}>{day}</th>
         ))}
       </>
@@ -124,12 +123,16 @@ class DaysOfMonth extends Component {
 const HabitRow = (e) => {
   const { data } = useQuery(DAYS_QUERY, 
     {variables: {
-      username: "diogoaj", name: e.name}});
+      username: "diogoaj", 
+      name: e.name,
+      month: e.month + 1,
+      year: e.year
+    }});
   
   return (
     <tr>
       <th className="f5 w2 outline">{e.name}</th>
-      {data && <ClickableDays days={data} month={e.month} year={e.year} habit={e.name}/> }
+      {data && <ClickableDays days_to_print={e.days_to_print} days={data.habitDays} month={e.month} year={e.year} habit={e.name}/> }
     </tr>
   )
 }
@@ -137,14 +140,8 @@ const HabitRow = (e) => {
 class ClickableDays extends Component {
   render() {
     var map = {}
-    let days_array = createDaysArray(this.props.month);
+    const checked_days = this.props.days;
 
-    for(var i=0; i < days_array.length; i++) {
-      map[i+1] = false;
-    }
-
-    const checked_days = this.props.days.habitDays;
- 
     for(var i=0; i < checked_days.length; i++) {
       if ((this.props.month+1) === checked_days[i].month &&
          this.props.year === checked_days[i].year){
@@ -154,7 +151,7 @@ class ClickableDays extends Component {
 
     return (
       <>
-        {days_array.map((day) => (
+        {this.props.days_to_print.map((day) => (
           <ClickCell days={map} day={day} key={day} month={this.props.month} year={this.props.year} habit={this.props.habit}/>
         ))}
       </>
@@ -170,7 +167,7 @@ const ClickCell = (e) => {
       day: e.day,
       month: e.month+1,
       year: e.year
-    }, refetchQueries: [{ query: DAYS_QUERY, variables: {username: "diogoaj", name: e.habit}}]
+    }, refetchQueries: [{ query: DAYS_QUERY, variables: {username: "diogoaj", name: e.habit, month: e.month+1, year: e.year}}]
   });
 
   const [uncheckDay] = useMutation(UNCHECK_DAY_MUTATION, {
@@ -180,7 +177,7 @@ const ClickCell = (e) => {
       day: e.day,
       month: e.month+1,
       year: e.year
-    }, refetchQueries: [{ query: DAYS_QUERY, variables: {username: "diogoaj", name: e.habit}}]
+    }, refetchQueries: [{ query: DAYS_QUERY, variables: {username: "diogoaj", name: e.habit, month: e.month+1, year: e.year}}]
     });
 
   function clickMe() {
@@ -200,7 +197,6 @@ const ClickCell = (e) => {
       <th onClick={clickMe} className="w2 outline" key={e.day}></th>
     )
   }
-    
 }
   
 
