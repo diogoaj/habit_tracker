@@ -5,6 +5,7 @@
 /server/node_modules
 /server/prisma/migration
 /server/prisma/dev.db
+/server/src/config.js
 /.pnp
 .pnp.js
 

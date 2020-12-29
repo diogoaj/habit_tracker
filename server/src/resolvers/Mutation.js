@@ -1,13 +1,45 @@
-async function registerUser(parent, args, context, info) {
-    const newUser = context.prisma.user.create({
-        data: {
-            username: args.username,
-            habits: []
-        }
-    })
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { getUserId } = require('../utils');
+const { APP_SECRET } = require('../config');
 
-    return newUser
+async function registerUser(parent, args, context, info) {
+  const password = await bcrypt.hash(args.password, 10);
+
+  const user = await context.prisma.user.create({
+      data: {
+          username: args.username,
+          password: password,
+          habits: []
+      }
+  })
+
+  const token = jwt.sign({ userId: user.id }, APP_SECRET);
+  
+  return { token, user };
 } 
+
+async function login(parent, args, context, info) {
+  const user = await context.prisma.user.findUnique({ where: { username: args.username } })
+
+  if (!user) {
+    throw new Error('No such user found');
+  }
+
+  const valid = await bcrypt.compare(
+    args.password,
+    user.password
+  );
+  
+  if (!valid) {
+    throw new Error('Invalid password');
+  }
+
+  const token = jwt.sign({ userId: user.id }, APP_SECRET);
+
+  return {token, user};
+
+}
 
 async function createHabit(parent, args, context, info) {
     const user = await context.prisma.user.findUnique({ where: { username: args.username } })
@@ -103,6 +135,7 @@ async function uncheckDay(parent, args, context, info) {
 
 module.exports = {
     registerUser,
+    login,
     createHabit,
     checkDay,
     uncheckDay,

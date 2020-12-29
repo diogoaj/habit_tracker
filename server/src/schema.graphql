@@ -6,8 +6,8 @@ type User {
 }
 
 type AuthPayload {
-    token: String!
-    user: User!
+    token: String
+    user: User
 }
 
 type Habit {
@@ -27,14 +27,14 @@ type Date {
 
 type Query {
     user(id: String!): User
-    me: User
     users: [User]
     habits(username: String!): [Habit]
     habitDays(username: String!, name: String!, month: Int, year: Int): [Date]
 }
 
 type Mutation {
-    registerUser(username: String!, password: String!): AuthPayload!
+    registerUser(username: String!, password: String!): AuthPayload
+    login(username: String!, password: String!): AuthPayload
     createHabit(username: String!, name: String!): Habit!
     checkDay(username: String!, habit_name: String!, day: Int!, month: Int!, year: Int!): Date
     uncheckDay(username: String!, habit_name: String!, day: Int!, month: Int!, year: Int!): Date

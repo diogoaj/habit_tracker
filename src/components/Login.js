@@ -16,19 +16,6 @@ const Login = () => {
           {formState.login ? 'Login' : 'Sign Up'}
         </h4>
         <div className="flex flex-column">
-          {!formState.login && (
-            <input
-              value={formState.name}
-              onChange={(e) =>
-                setFormState({
-                  ...formState,
-                  name: e.target.value
-                })
-              }
-              type="text"
-              placeholder="Your name"
-            />
-          )}
           <input
             value={formState.email}
             onChange={(e) =>
@@ -38,7 +25,7 @@ const Login = () => {
               })
             }
             type="text"
-            placeholder="Your email address"
+            placeholder="Your username"
           />
           <input
             value={formState.password}
