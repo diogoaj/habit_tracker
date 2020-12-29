@@ -10,7 +10,7 @@ const App = () => {
     <div className="fixed overflow-x-hidden w-100">
         <Header/>
         <Switch>
-          <Route exact path="/"/>
+          <Route exact path="/" component={HabitCalendar}/>
           <Route exact path="/login" component={Login} />
         </Switch>
     </div>

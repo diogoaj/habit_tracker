@@ -3,6 +3,7 @@ import {daysInMonth, getMonth, integerToMonth, getYear} from '../utils/date'
 import { useQuery, useLazyQuery, useMutation} from 'react-apollo'
 import gql from 'graphql-tag'
 import {mod} from '../utils/math'
+import Cookie from "js-cookie"
 
 const HABITS_QUERY = gql`
   query getHabits($username: String!) {
@@ -51,6 +52,8 @@ const UNCHECK_DAY_MUTATION = gql`
 `;
 
 const HabitCalendar = () => {
+  const token = Cookie.get("token");
+
   const { data } = useQuery(HABITS_QUERY, {variables: {username: "diogoaj"}});
 
   const [month_d, setMonthnum] = useState(getMonth());
@@ -79,7 +82,8 @@ const HabitCalendar = () => {
 
   return (
     <div className="mv4">
-     
+      {token && (
+      <>
       <div className="center w-80 tc">
         <button onClick={prevMonth}>&laquo;</button>
         <span className="f3 ma3">{month} {year}</span>
@@ -103,7 +107,9 @@ const HabitCalendar = () => {
         )} 
         </tbody>
       </table>
-    </div>
+      </>
+      )}
+    </div> 
   );
 };
 

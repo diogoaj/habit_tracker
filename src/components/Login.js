@@ -1,13 +1,66 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
+import gql from 'graphql-tag'
+import { useQuery, useLazyQuery, useMutation} from 'react-apollo'
+import Cookie from "js-cookie"
+
+const SIGNUP_MUTATION = gql`
+  mutation SignupMutation(
+    $username: String!
+    $password: String!
+  ) {
+    registerUser(
+      username: $username
+      password: $password
+    ) {
+      token
+    }
+  }
+`;
+
+
+const LOGIN_MUTATION = gql`
+  mutation LoginMutation(
+    $username: String!
+    $password: String!
+  ) {
+    login(username: $username, password: $password) {
+      token
+    }
+  }
+`;
+
 
 const Login = () => {
     const history = useHistory();
     const [formState, setFormState] = useState({
       login: true,
-      email: '',
+      username: '',
       password: '',
-      name: ''
+    });
+
+    const [login] = useMutation(LOGIN_MUTATION, {
+      variables: {
+        username: formState.username,
+        password: formState.password
+      },
+      onCompleted: ({ login }) => {
+        Cookie.set("token", login.token, { sameSite: 'strict', secure: true })
+        history.push('/');
+        window.location.reload();
+      }
+    });
+    
+    const [registerUser] = useMutation(SIGNUP_MUTATION, {
+      variables: {
+        username: formState.username,
+        password: formState.password
+      },
+      onCompleted: ({ registerUser }) => {
+        Cookie.set("token", registerUser.token, { sameSite: 'strict', secure: true })
+        history.push('/');
+        window.location.reload();
+      }
     });
   
     return (
@@ -17,11 +70,11 @@ const Login = () => {
         </h4>
         <div className="flex flex-column">
           <input
-            value={formState.email}
+            value={formState.username}
             onChange={(e) =>
               setFormState({
                 ...formState,
-                email: e.target.value
+                username: e.target.value
               })
             }
             type="text"
@@ -42,7 +95,7 @@ const Login = () => {
         <div className="flex mt3">
           <button
             className="pointer mr2 button"
-            onClick={() => console.log('onClick')}
+            onClick={formState.login ? login : registerUser}
           >
             {formState.login ? 'login' : 'create account'}
           </button>
@@ -63,5 +116,7 @@ const Login = () => {
       </div>
     );
   };
+
+
   
-  export default Login;
+export default Login;

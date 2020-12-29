@@ -101,6 +101,8 @@ async function checkDay(parent, args, context, info) {
 
     return newDate
 }
+null
+
 
 async function uncheckDay(parent, args, context, info) {
   const user = await context.prisma.user.findUnique({ where: { username: args.username } })

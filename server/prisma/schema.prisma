@@ -14,12 +14,6 @@ model User {
   habits      Habit[]
 }
 
-model AuthPayload {
-  token       String   @unique
-  userId      Int
-  user        User @relation(fields: [userId], references: [id])
-}
-
 model Habit {
     id          Int      @id @default(autoincrement())
     name        String
