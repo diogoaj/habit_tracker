@@ -47,7 +47,6 @@ const Login = () => {
       onCompleted: ({ login }) => {
         Cookie.set("token", login.token, { sameSite: 'strict', secure: true })
         history.push('/');
-        window.location.reload();
       }
     });
     
@@ -59,7 +58,6 @@ const Login = () => {
       onCompleted: ({ registerUser }) => {
         Cookie.set("token", registerUser.token, { sameSite: 'strict', secure: true })
         history.push('/');
-        window.location.reload();
       }
     });
   

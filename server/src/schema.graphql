@@ -28,14 +28,14 @@ type Date {
 type Query {
     user(id: String!): User
     users: [User]
-    habits(username: String!): [Habit]
-    habitDays(username: String!, name: String!, month: Int, year: Int): [Date]
+    habits: [Habit]
+    habitDays(name: String!, month: Int, year: Int): [Date]
 }
 
 type Mutation {
     registerUser(username: String!, password: String!): AuthPayload
     login(username: String!, password: String!): AuthPayload
-    createHabit(username: String!, name: String!): Habit!
-    checkDay(username: String!, habit_name: String!, day: Int!, month: Int!, year: Int!): Date
-    uncheckDay(username: String!, habit_name: String!, day: Int!, month: Int!, year: Int!): Date
+    createHabit(name: String!): Habit!
+    checkDay(habit_name: String!, day: Int!, month: Int!, year: Int!): Date
+    uncheckDay(habit_name: String!, day: Int!, month: Int!, year: Int!): Date
 }

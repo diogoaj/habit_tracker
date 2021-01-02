@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const APP_SECRET = require('./config')
+const { APP_SECRET } = require('./config')
 
 
 function getTokenPayload(token) {
@@ -8,7 +8,7 @@ function getTokenPayload(token) {
 
 function getUserId(req, authToken) {
     if (req) {
-        const authHeader = req.headers.authorization;
+        const authHeader = req.headers.authorization; 
         if (authHeader) {
         const token = authHeader.replace('Bearer ', '');
         if (!token) {

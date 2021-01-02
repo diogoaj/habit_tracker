@@ -3,27 +3,19 @@ function users(parent, args, context, info) {
 }
 
 async function habits(parent, args, context, info) {
-  const user = await context.prisma.user.findUnique({where: {username: args.username}})
-
-  if (user === null) {
-    return null
-  }
+  const { userId } = context;
 
   return context.prisma.habit.findMany({
-    where: {userId: user.id}
+    where: {userId: userId}
   })
 }
 
 async function habitDays(parent, args, context, info) {
-  const user = await context.prisma.user.findUnique({where: {username: args.username}})
-
-  if (user === null) {
-    return []
-  }
+  const { userId } = context;
 
   const habit = await context.prisma.habit.findFirst({
     where: {
-      userId: user.id,
+      userId: userId,
       name: args.name
     }
   })

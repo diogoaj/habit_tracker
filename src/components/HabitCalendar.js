@@ -6,16 +6,17 @@ import {mod} from '../utils/math'
 import Cookie from "js-cookie"
 
 const HABITS_QUERY = gql`
-  query getHabits($username: String!) {
-    habits(username: $username) {
+  {
+    habits {
+        id
         name
     }
   }
 `
 
 const DAYS_QUERY = gql`
-  query getDays($username: String!, $name: String!, $month: Int, $year: Int) {
-    habitDays(username: $username, name: $name, month: $month, year: $year) {
+  query getDays($name: String!, $month: Int, $year: Int) {
+    habitDays(name: $name, month: $month, year: $year) {
         day
         month
         year
@@ -25,13 +26,12 @@ const DAYS_QUERY = gql`
 
 const CHECK_DAY_MUTATION = gql`
   mutation checkDayMutation(
-    $username: String!
     $habit_name: String!,
     $day: Int!,
     $month: Int!,
     $year: Int!
   ) {
-    checkDay(username: $username, habit_name: $habit_name, day: $day, month: $month, year: $year) {
+    checkDay(habit_name: $habit_name, day: $day, month: $month, year: $year) {
       id
     }
   }
@@ -39,13 +39,12 @@ const CHECK_DAY_MUTATION = gql`
 
 const UNCHECK_DAY_MUTATION = gql`
   mutation uncheckDayMutation(
-    $username: String!
     $habit_name: String!,
     $day: Int!,
     $month: Int!,
     $year: Int!
   ) {
-    uncheckDay(username: $username, habit_name: $habit_name, day: $day, month: $month, year: $year) {
+    uncheckDay(habit_name: $habit_name, day: $day, month: $month, year: $year) {
       id
     }
   }
@@ -54,11 +53,11 @@ const UNCHECK_DAY_MUTATION = gql`
 const HabitCalendar = () => {
   const token = Cookie.get("token");
 
-  const { data } = useQuery(HABITS_QUERY, {variables: {username: "diogoaj"}});
+  const { data } = useQuery(HABITS_QUERY);
 
   const [month_d, setMonthnum] = useState(getMonth());
   const [month, setMonth] = useState(integerToMonth(getMonth()));
-  const [year, setYear] = useState(2020);
+  const [year, setYear] = useState(getYear());
 
   let days = createDaysArray(month_d);
 
@@ -129,7 +128,6 @@ class DaysOfMonth extends Component {
 const HabitRow = (e) => {
   const { data } = useQuery(DAYS_QUERY, 
     {variables: {
-      username: "diogoaj", 
       name: e.name,
       month: e.month + 1,
       year: e.year
@@ -168,22 +166,20 @@ class ClickableDays extends Component {
 const ClickCell = (e) => {
   const [checkDay] = useMutation(CHECK_DAY_MUTATION, {
     variables: {
-      username: "diogoaj",
       habit_name: e.habit,
       day: e.day,
       month: e.month+1,
       year: e.year
-    }, refetchQueries: [{ query: DAYS_QUERY, variables: {username: "diogoaj", name: e.habit, month: e.month+1, year: e.year}}]
+    }, refetchQueries: [{ query: DAYS_QUERY, variables: {name: e.habit, month: e.month+1, year: e.year}}]
   });
 
   const [uncheckDay] = useMutation(UNCHECK_DAY_MUTATION, {
     variables: {
-      username: "diogoaj",
       habit_name: e.habit,
       day: e.day,
       month: e.month+1,
       year: e.year
-    }, refetchQueries: [{ query: DAYS_QUERY, variables: {username: "diogoaj", name: e.habit, month: e.month+1, year: e.year}}]
+    }, refetchQueries: [{ query: DAYS_QUERY, variables: {name: e.habit, month: e.month+1, year: e.year}}]
     });
 
   function clickMe() {

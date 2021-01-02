@@ -42,13 +42,13 @@ async function login(parent, args, context, info) {
 }
 
 async function createHabit(parent, args, context, info) {
-    const user = await context.prisma.user.findUnique({ where: { username: args.username } })
+    const { userId } = context;
     
     const newHabit = context.prisma.habit.create({
         data: {
             name: args.name,
             days: [],
-            user: {connect: {id: user.id}},
+            user: {connect: {id: userId}},
         }
     })
 
@@ -61,11 +61,12 @@ async function createHabit(parent, args, context, info) {
 } 
 
 async function checkDay(parent, args, context, info) {
-    const user = await context.prisma.user.findUnique({ where: { username: args.username } })
+    const { userId } = context;
+
     const habit = await context.prisma.habit.findFirst({
       where: {
           name: args.habit_name,
-          userId: user.id
+          userId: userId
       }
     })
 
@@ -94,22 +95,22 @@ async function checkDay(parent, args, context, info) {
     context.prisma.habit.update({
         where: {
           name: args.habit_name,
-          userId: user.id,
+          userId: userId,
           },
         data: newDate
     })
 
     return newDate
 }
-null
 
 
 async function uncheckDay(parent, args, context, info) {
-  const user = await context.prisma.user.findUnique({ where: { username: args.username } })
+  const { userId } = context;
+
   const habit = await context.prisma.habit.findFirst({
         where: {
           name: args.habit_name,
-          userId: user.id,
+          userId: userId,
         }
       })
 
