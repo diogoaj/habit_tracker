@@ -27,6 +27,12 @@ const Header = (props) => {
               login
             </Link>
           )}
+
+          {props.token && (
+            <Link to="/newHabit" className="link dim white dib mr3 fr">
+              New Habit
+            </Link>
+          )}
         </nav>
     </header>
   );

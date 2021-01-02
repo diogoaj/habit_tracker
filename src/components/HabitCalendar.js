@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react'
 import {daysInMonth, getMonth, integerToMonth, getYear} from '../utils/date'
-import { useQuery, useLazyQuery, useMutation} from 'react-apollo'
+import { useQuery, useMutation} from 'react-apollo'
 import gql from 'graphql-tag'
 import {mod} from '../utils/math'
 
@@ -82,10 +82,10 @@ const HabitCalendar = (props) => {
     <div className="mv4">
       {token && (
       <>
-      <div className="center w-80 tc">
-        <button onClick={prevMonth}>&laquo;</button>
-        <span className="f3 ma3">{month} {year}</span>
-        <button onClick={nextMonth}>&raquo;</button>
+      <div className="center w-80">
+        <button className="left pointer relative mr2" onClick={prevMonth}>&laquo;</button>
+        <button className="left pointer relative" onClick={nextMonth}>&raquo;</button>
+        <span className="f3 ma3 tc relative">{month} {year}</span>
       </div>
       
       <table className="nowrap overflow-x-hidden center mv2 w-80">
@@ -181,7 +181,7 @@ const ClickCell = (e) => {
     }, refetchQueries: [{ query: DAYS_QUERY, variables: {name: e.habit, month: e.month+1, year: e.year}}]
     });
 
-  function clickMe() {
+  function check() {
     if (e.days[e.day]){
       uncheckDay();
     } else {
@@ -191,11 +191,11 @@ const ClickCell = (e) => {
 
   if (e.days[e.day]){
     return (
-      <th onClick={clickMe} className="w2 outline bg-green" key={e.day}></th>
+      <th onClick={check} className="w2 outline bg-green" key={e.day}></th>
     )
   } else {
     return (
-      <th onClick={clickMe} className="w2 outline" key={e.day}></th>
+      <th onClick={check} className="w2 outline" key={e.day}></th>
     )
   }
 }
