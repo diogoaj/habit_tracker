@@ -31,7 +31,7 @@ const LOGIN_MUTATION = gql`
 `;
 
 
-const Login = () => {
+const Login = (props) => {
     const history = useHistory();
     const [formState, setFormState] = useState({
       login: true,
@@ -47,6 +47,7 @@ const Login = () => {
       onCompleted: ({ login }) => {
         Cookie.set("token", login.token, { sameSite: 'strict', secure: true })
         history.push('/');
+        props.loginHandler({token: Cookie.get("token")});
       }
     });
     
@@ -58,6 +59,7 @@ const Login = () => {
       onCompleted: ({ registerUser }) => {
         Cookie.set("token", registerUser.token, { sameSite: 'strict', secure: true })
         history.push('/');
+        props.loginHandler({token: Cookie.get("token")});
       }
     });
   
