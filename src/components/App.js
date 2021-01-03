@@ -9,21 +9,20 @@ import HabitCalendar from './HabitCalendar';
 import Cookie from "js-cookie"
 
 const App = () => {
-  const [loginState, setLoginState] = useState({
+  const [userState, setUserState] = useState({
     token: Cookie.get("token"),
-    
   });
 
   return (
     <div className="fixed overflow-x-hidden w-100">
-        <Header token={loginState.token} loginHandler={setLoginState}/>
+        <Header token={userState.token} userHandler={setUserState}/>
         <Switch>
           <Route exact path="/"
-                 render={() => (<HabitCalendar token={loginState.token}/> )}/>
+                 render={() => (<HabitCalendar token={userState.token}/> )}/>
           <Route exact path="/login" 
-                 render={() => (<Login token={loginState.token} loginHandler={setLoginState}/> )}/>
+                 render={() => (<Login userHandler={setUserState}/> )}/>
           <Route exact path="/newHabit" 
-                 render={() => (<NewHabit token={loginState.token} /> )}/>
+                 render={() => (<NewHabit /> )}/>
         </Switch>
     </div>
   )

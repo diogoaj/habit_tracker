@@ -47,7 +47,9 @@ const Login = (props) => {
       onCompleted: ({ login }) => {
         Cookie.set("token", login.token, { sameSite: 'strict', secure: true })
         history.push('/');
-        props.loginHandler({token: Cookie.get("token")});
+        props.userHandler({
+          token: Cookie.get("token")
+        });
       }
     });
     
@@ -59,7 +61,9 @@ const Login = (props) => {
       onCompleted: ({ registerUser }) => {
         Cookie.set("token", registerUser.token, { sameSite: 'strict', secure: true })
         history.push('/');
-        props.loginHandler({token: Cookie.get("token")});
+        props.userHandler({
+          token: Cookie.get("token")
+        });
       }
     });
   

@@ -18,7 +18,7 @@ const Header = (props) => {
                   onClick={() => {
                             Cookie.remove("token");
                             history.push('/');
-                            props.loginHandler({token: Cookie.get("token")});
+                            props.userHandler({token: Cookie.get("token")});
                           }}>
               logout
             </Link>

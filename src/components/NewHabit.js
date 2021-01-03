@@ -3,6 +3,15 @@ import { useHistory } from 'react-router';
 import gql from 'graphql-tag'
 import {useMutation} from 'react-apollo'
 
+const HABITS_QUERY = gql`
+  {
+    habits {
+        id
+        name
+    }
+  }
+`
+
 const NEW_HABIT_MUTATION = gql`
   mutation newHabitMutation(
     $habit_name: String!
@@ -23,7 +32,7 @@ const NewHabit = (props) => {
     const [newHabit] = useMutation(NEW_HABIT_MUTATION, {
         variables: {
             habit_name: formState.habit_name
-        }
+        }, refetchQueries: [{ query: HABITS_QUERY}],
     });
 
   return (
