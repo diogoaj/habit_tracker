@@ -32,7 +32,7 @@ const NewHabit = (props) => {
     const [newHabit] = useMutation(NEW_HABIT_MUTATION, {
         variables: {
             habit_name: formState.habit_name
-        }, refetchQueries: [{ query: HABITS_QUERY}],
+        }, refetchQueries: [{ query: HABITS_QUERY }],
     });
 
   return (

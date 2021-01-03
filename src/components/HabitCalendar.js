@@ -105,6 +105,12 @@ const HabitCalendar = (props) => {
         )} 
         </tbody>
       </table>
+      <div className="center w-80">
+        <a className="f6 fr relative no-underline br-pill ph3 pv2 mb2 dib white b bg-blue" 
+              href="/newHabit">
+          Add Habit
+        </a>
+      </div>
       </>
       )}
     </div> 
